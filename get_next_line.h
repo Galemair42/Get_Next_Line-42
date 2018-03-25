@@ -10,10 +10,11 @@
 # include <fcntl.h>
 # include "libft.h"
 
-# define BUF_SIZE 1000
+# define BUF_SIZE 1
 # define ERROR -1
 # define SUCCESS 1
 # define EXIT_FINISH 0
+# define NOT_FOUND -1
 
 typedef struct s_perso t_perso;
 
@@ -21,6 +22,7 @@ struct	s_perso
 {
 	char	*str;
 	int	fd;
+	int	eof;
 	t_perso	*next;
 };
 
