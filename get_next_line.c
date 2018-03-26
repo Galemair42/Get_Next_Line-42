@@ -44,6 +44,8 @@ int	ft_fill_line(const int fd, t_perso *tmp, char **line)
 {
 	int line_length;
 
+	if (tmp->eof == 1 && tmp->str == NULL)
+		return (EXIT_FINISH);
 	while ((ft_line_is_full(tmp->str)) == NOT_FOUND && tmp->eof == 0)
 	{
 		if (ft_read(fd, tmp) == ERROR)
@@ -52,8 +54,9 @@ int	ft_fill_line(const int fd, t_perso *tmp, char **line)
 	line_length = ft_line_is_full(tmp->str);
 	if (line_length == NOT_FOUND)
 	{
-		*line = malloc(sizeof(char) * (ft_strlen(tmp->str) + 1));
-		*line = ft_strcpy(*line, tmp->str);
+		//*line = malloc(sizeof(char) * (ft_strlen(tmp->str) + 1));
+		//*line = ft_strcpy(*line, tmp->str);
+		*line = NULL;
 		free(tmp->str);
 		return (EXIT_FINISH);
 	}
@@ -62,20 +65,7 @@ int	ft_fill_line(const int fd, t_perso *tmp, char **line)
 	*line = ft_strncpy(*line, tmp->str, line_length);
 	(*line)[line_length] = '\0';
 	tmp->str = ft_reduce_str(tmp->str, line_length + 1);
-	if ((tmp->str) == NULL && tmp->eof == 1)
-		return (EXIT_FINISH);
 	return (SUCCESS);
-}
-
-void	print_list(t_perso *tab)
-{
-	while (tab)
-	{
-		printf("fd = %d\n", tab->fd);
-		printf("eof = %d\n", tab->eof);
-		printf("str = %s\n", tab->str);
-		tab = tab->next;
-	}
 }
 t_perso	*init_struct(t_perso *tab, const int fd)
 {
@@ -110,7 +100,6 @@ int	get_next_line(const int fd, char **line)
 		tmp2->next = tmp;
 		tmp = init_struct(tab, fd);
 	}
-	//print_list(tmp);
 	return (ft_fill_line(fd, tmp, line));
 }
 
@@ -123,31 +112,33 @@ int	main(int argc, char **argv)
 	line = NULL;
 	fd = open(argv[1], O_RDONLY);
 	fd2 = open(argv[2], O_RDONLY);
-//	while (get_next_line(fd, &line))
-//	{
-//		printf("APPEL %d\n", i);
-//		printf("%s\n\n", line);
-//		free(line);
-//		line = NULL;
-//		i++;
-//	}
-//	printf("APPEL %d\n", i);
-//	printf("%s\n\n", line);
-	get_next_line(fd, &line);
-	printf("fd 1 =%s\n", line);
-	free(line);
-	line = NULL;
-	get_next_line(fd2, &line);
-	printf("fd 2 =%s\n", line);
-	free(line);
-	line = NULL;
-	get_next_line(fd, &line);
-	printf("fd 1 =%s\n", line);
-	free(line);
-	line = NULL;	
-	get_next_line(fd2, &line);
-	printf("fd 2 =%s\n", line);
-	free(line);
-	line = NULL;
+	while (get_next_line(fd, &line))
+//	while (i < 8)
+	{
+//		printf("Retour = %d\n", get_next_line(fd, &line));
+		//printf("APPEL %d\n", i);
+		printf("%s\n", line);
+		free(line);
+		line = NULL;
+		i++;
+	}
+	printf("APPEL %d\n", i);
+	printf("%s\n\n", line);
+//	get_next_line(fd, &line);
+//	printf("fd 1 =%s\n", line);
+//	free(line);
+//	line = NULL;
+//	get_next_line(fd2, &line);
+//	printf("fd 2 =%s\n", line);
+//	free(line);
+//	line = NULL;
+//	get_next_line(fd, &line);
+//	printf("fd 1 =%s\n", line);
+//	free(line);
+//	line = NULL;	
+//	get_next_line(fd2, &line);
+//	printf("fd 2 =%s\n", line);
+//	free(line);
+//	line = NULL;
 	return (0);
 }
