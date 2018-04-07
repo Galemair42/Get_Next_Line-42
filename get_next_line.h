@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: galemair <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/04/06 15:40:50 by galemair          #+#    #+#             */
+/*   Updated: 2018/04/06 15:44:09 by galemair         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
@@ -10,22 +22,23 @@
 # include <fcntl.h>
 # include "libft.h"
 
-# define BUF_SIZE 1
+# define BUFF_SIZE 1
 # define ERROR -1
 # define SUCCESS 1
 # define EXIT_FINISH 0
 # define NOT_FOUND -1
 
-typedef struct s_perso t_perso;
+typedef struct s_perso	t_perso;
 
-struct	s_perso
+struct					s_perso
 {
-	char	*str;
-	int	fd;
-	int	eof;
-	t_perso	*next;
+	char				*str;
+	int					len;
+	int					fd;
+	int					eof;
+	t_perso				*next;
 };
 
-int	get_next_line(const int fd, char **line);
+int						get_next_line(const int fd, char **line);
 
 #endif
