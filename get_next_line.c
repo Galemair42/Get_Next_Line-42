@@ -6,7 +6,7 @@
 /*   By: galemair <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/06 12:29:21 by galemair          #+#    #+#             */
-/*   Updated: 2018/04/06 15:39:01 by galemair         ###   ########.fr       */
+/*   Updated: 2018/04/08 18:56:31 by galemair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,21 +63,20 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line)
 		if ((ft_read(fd, tab)) == ERROR)
 			return (ERROR);
 	if (tab->eof == 1 && tab->len == 0)
-	{
-		*line = NULL;
 		return (EXIT_FINISH);
-	}
 	line_length = ft_line_is_full(tab);
 	if (line_length == NOT_FOUND && tab->eof == 1)
 	{
-		*line = ft_strnew(tab->len);
+		if ((*line = ft_strnew(tab->len)) == NULL)
+			return (ERROR);
 		ft_memcpy(*line, tab->str, tab->len);
 		tab->len = 0;
 		free(tab->str);
 		tab->str = NULL;
 		return (SUCCESS);
 	}
-	*line = ft_strnew(line_length);
+	if ((*line = ft_strnew(line_length)) == NULL)
+		return (ERROR);
 	ft_memcpy(*line, tab->str, line_length);
 	tab->str = (char *)ft_reduce(tab->str, line_length + 1, tab->len);
 	tab->len -= (line_length + 1);
@@ -96,10 +95,13 @@ t_perso	*init_struct(t_perso *tab, const int fd)
 
 int		get_next_line(const int fd, char **line)
 {
-	static t_perso	*tab;
+	static t_perso	*tab = NULL;
 	t_perso			*tmp;
 	t_perso			*tmp2;
 
+	if (!line)
+		return (ERROR);
+	*line = NULL;
 	if (!tab)
 	{
 		if ((tab = malloc(sizeof(t_perso))) == NULL)
@@ -117,7 +119,7 @@ int		get_next_line(const int fd, char **line)
 		if ((tmp = malloc(sizeof(t_perso))) == NULL)
 			return (ERROR);
 		tmp2->next = tmp;
-		tmp = init_struct(tab, fd);
+		tmp = init_struct(tmp, fd);
 	}
 	return (ft_fill_line(fd, tmp, line));
 }

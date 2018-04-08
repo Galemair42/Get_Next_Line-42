@@ -6,7 +6,7 @@
 /*   By: galemair <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/06 15:40:50 by galemair          #+#    #+#             */
-/*   Updated: 2018/04/06 15:44:09 by galemair         ###   ########.fr       */
+/*   Updated: 2018/04/08 16:36:28 by galemair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <fcntl.h>
 # include "libft.h"
 
-# define BUFF_SIZE 1
+# define BUFF_SIZE 16
 # define ERROR -1
 # define SUCCESS 1
 # define EXIT_FINISH 0
