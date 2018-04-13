@@ -6,7 +6,7 @@
 /*   By: galemair <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/06 12:29:21 by galemair          #+#    #+#             */
-/*   Updated: 2018/04/08 18:56:31 by galemair         ###   ########.fr       */
+/*   Updated: 2018/04/09 18:22:30 by galemair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int		ft_read(const int fd, t_perso *tab)
 		tab->str = tmp;
 		tab->len += ret;
 	}
-	if (ret < BUFF_SIZE)
+	if (ret == 0)
 		tab->eof = 1;
 	return (SUCCESS);
 }
@@ -85,6 +85,8 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line)
 
 t_perso	*init_struct(t_perso *tab, const int fd)
 {
+	if ((tab = malloc(sizeof(t_perso))) == NULL)
+		return (NULL);
 	tab->fd = fd;
 	tab->str = NULL;
 	tab->next = NULL;
@@ -103,11 +105,8 @@ int		get_next_line(const int fd, char **line)
 		return (ERROR);
 	*line = NULL;
 	if (!tab)
-	{
-		if ((tab = malloc(sizeof(t_perso))) == NULL)
+		if ((tab = init_struct(tab, fd)) == NULL)
 			return (ERROR);
-		tab = init_struct(tab, fd);
-	}
 	tmp = tab;
 	while (tmp && tmp->fd != fd)
 		tmp = tmp->next;
@@ -116,10 +115,9 @@ int		get_next_line(const int fd, char **line)
 		tmp2 = tab;
 		while (tmp2->next)
 			tmp2 = tmp2->next;
-		if ((tmp = malloc(sizeof(t_perso))) == NULL)
+		if ((tmp = init_struct(tmp, fd)) == NULL)
 			return (ERROR);
 		tmp2->next = tmp;
-		tmp = init_struct(tmp, fd);
 	}
 	return (ft_fill_line(fd, tmp, line));
 }
