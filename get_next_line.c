@@ -6,7 +6,7 @@
 /*   By: galemair <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/06 12:29:21 by galemair          #+#    #+#             */
-/*   Updated: 2018/04/09 18:22:30 by galemair         ###   ########.fr       */
+/*   Updated: 2018/04/12 14:18:48 by galemair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,19 @@ int		ft_read(const int fd, t_perso *tab)
 {
 	char	buff[BUFF_SIZE];
 	int		ret;
-	char	*tmp;
 
 	if ((ret = read(fd, buff, BUFF_SIZE)) == ERROR)
 		return (ERROR);
-	if (tab->len == 0)
+	if (tab->len == 0 && ret != 0)
 	{
 		if ((tab->str = malloc(sizeof(char) * ret)) == NULL)
 			return (ERROR);
 		ft_memcpy(tab->str, buff, ret);
 		tab->len = ret;
 	}
-	else
+	else if (ret != 0)
 	{
-		tmp = ft_merge(tab->str, buff, tab->len, ret);
-		free(tab->str);
-		tab->str = tmp;
+		tab->str = ft_merge(tab->str, buff, tab->len, ret);
 		tab->len += ret;
 	}
 	if (ret == 0)
@@ -55,7 +52,28 @@ int		ft_line_is_full(t_perso *tab)
 	return (NOT_FOUND);
 }
 
-int		ft_fill_line(const int fd, t_perso *tab, char **line)
+int		ft_clean_list(const int fd, t_perso **list)
+{
+	t_perso *tmp1;
+	t_perso *tmp2;
+
+	tmp1 = *list;
+	if ((*list)->fd == fd)
+	{
+		tmp1 = (*list)->next;
+		free(*list);
+		*list = tmp1;
+		return (EXIT_FINISH);
+	}
+	while ((tmp1->next)->fd != fd)
+		tmp1 = tmp1->next;
+	tmp2 = (tmp1->next)->next;
+	free(tmp1->next);
+	tmp1->next = tmp2;
+	return (EXIT_FINISH);
+}
+
+int		ft_fill_line(const int fd, t_perso *tab, char **line, t_perso **list)
 {
 	int line_length;
 
@@ -63,7 +81,7 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line)
 		if ((ft_read(fd, tab)) == ERROR)
 			return (ERROR);
 	if (tab->eof == 1 && tab->len == 0)
-		return (EXIT_FINISH);
+		return (ft_clean_list(fd, list));
 	line_length = ft_line_is_full(tab);
 	if (line_length == NOT_FOUND && tab->eof == 1)
 	{
@@ -83,18 +101,6 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line)
 	return (SUCCESS);
 }
 
-t_perso	*init_struct(t_perso *tab, const int fd)
-{
-	if ((tab = malloc(sizeof(t_perso))) == NULL)
-		return (NULL);
-	tab->fd = fd;
-	tab->str = NULL;
-	tab->next = NULL;
-	tab->len = 0;
-	tab->eof = 0;
-	return (tab);
-}
-
 int		get_next_line(const int fd, char **line)
 {
 	static t_perso	*tab = NULL;
@@ -105,8 +111,11 @@ int		get_next_line(const int fd, char **line)
 		return (ERROR);
 	*line = NULL;
 	if (!tab)
-		if ((tab = init_struct(tab, fd)) == NULL)
+	{
+		if ((tab = ft_memalloc(sizeof(t_perso))) == NULL)
 			return (ERROR);
+		tab->fd = fd;
+	}
 	tmp = tab;
 	while (tmp && tmp->fd != fd)
 		tmp = tmp->next;
@@ -115,9 +124,10 @@ int		get_next_line(const int fd, char **line)
 		tmp2 = tab;
 		while (tmp2->next)
 			tmp2 = tmp2->next;
-		if ((tmp = init_struct(tmp, fd)) == NULL)
+		if ((tmp = ft_memalloc(sizeof(t_perso))) == NULL)
 			return (ERROR);
+		tmp->fd = fd;
 		tmp2->next = tmp;
 	}
-	return (ft_fill_line(fd, tmp, line));
+	return (ft_fill_line(fd, tmp, line, &tab));
 }
