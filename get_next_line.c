@@ -77,6 +77,7 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line, t_perso **list)
 {
 	int line_length;
 
+	*line = NULL;
 	while (ft_line_is_full(tab) == NOT_FOUND && tab->eof == 0)
 		if ((ft_read(fd, tab)) == ERROR)
 			return (ERROR);
@@ -104,30 +105,28 @@ int		ft_fill_line(const int fd, t_perso *tab, char **line, t_perso **list)
 int		get_next_line(const int fd, char **line)
 {
 	static t_perso	*tab = NULL;
-	t_perso			*tmp;
-	t_perso			*tmp2;
+	t_manip		tmp;
 
 	if (!line)
 		return (ERROR);
-	*line = NULL;
 	if (!tab)
 	{
 		if ((tab = ft_memalloc(sizeof(t_perso))) == NULL)
 			return (ERROR);
 		tab->fd = fd;
 	}
-	tmp = tab;
-	while (tmp && tmp->fd != fd)
-		tmp = tmp->next;
-	if (!tmp)
+	tmp.p = tab;
+	while (tmp.p && (tmp.p)->fd != fd)
+		tmp.p = (tmp.p)->next;
+	if (!(tmp.p))
 	{
-		tmp2 = tab;
-		while (tmp2->next)
-			tmp2 = tmp2->next;
-		if ((tmp = ft_memalloc(sizeof(t_perso))) == NULL)
+		tmp.t = tab;
+		while ((tmp.t)->next)
+			tmp.t = (tmp.t)->next;
+		if ((tmp.p = ft_memalloc(sizeof(t_perso))) == NULL)
 			return (ERROR);
-		tmp->fd = fd;
-		tmp2->next = tmp;
+		(tmp.p)->fd = fd;
+		(tmp.t)->next = tmp.p;
 	}
-	return (ft_fill_line(fd, tmp, line, &tab));
+	return (ft_fill_line(fd, tmp.p, line, &tab));
 }

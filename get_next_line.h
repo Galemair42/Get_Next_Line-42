@@ -22,7 +22,7 @@
 # include <fcntl.h>
 # include "libft.h"
 
-# define BUFF_SIZE 100
+# define BUFF_SIZE 9999
 # define ERROR -1
 # define SUCCESS 1
 # define EXIT_FINISH 0
@@ -38,6 +38,12 @@ struct					s_perso
 	int					eof;
 	t_perso				*next;
 };
+
+typedef	struct				s_manip
+{
+	t_perso 			*p;
+	t_perso				*t;
+}					t_manip;
 
 int						get_next_line(const int fd, char **line);
 
